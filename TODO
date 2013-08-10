@@ -1,0 +1,4 @@
+- add handling of gears set;
+- add app's properties saving;
+- add animation (during long term calculations);
+- add app-specific icon;
