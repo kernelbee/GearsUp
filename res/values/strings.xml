@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GearsUp</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="text_button"></string>
+    <string name="text_button0">2</string>
+    <string name="text_button1">4</string>
+    <string name="hint_ratio">1.23456789</string>
+    <string name="tratio">Trans. Ratio:</string>
+    <string name="hint_output">Results: {gears}, actual tr.ratio, error</string>
+
+</resources>
