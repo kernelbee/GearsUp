@@ -21,9 +21,7 @@ public class GearTrainGenerator {
 		this.set = set;
 		this.n_gears = set.length;
 		
-		this.sa = start;
-		
-		//this.sb = this.sc = this.sd = 0;		
+		this.sa = start;		
 	}
 	
 	public int getProgress(){

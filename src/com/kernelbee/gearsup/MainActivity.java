@@ -25,19 +25,13 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		n_cores = Runtime.getRuntime().availableProcessors();		
-		//System.out.format("MY CORES: %d\n",cores);
 		
 		output = (EditText)findViewById(R.id.text_output);
 		tratio = (EditText)findViewById(R.id.text_tratio);
 		progressbar = (ProgressBar)findViewById(R.id.progressBar);
 		button2 = (Button)findViewById(R.id.Button0);
 		button4 = (Button)findViewById(R.id.Button1);		
-		
-		//tratio.setText("1.1234567890");		
-		//output.setMovementMethod(new ScrollingMovementMethod());
-		//output.setKeyListener(null);
-		//output.setFocusable(true);
-		
+						
 		//adjust text size:
 		//output.setTextSize();		
 	}
@@ -48,25 +42,23 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-	public void start_work_2(View view){
+
+	public void start_searching(int ptrain_type){
 		
-		int set = 2;		
+		int set = 2;
 		int n_max = 20;
-		int type = 2;
-		
+				
 		String str = tratio.getText().toString(); 
-		
-		//if(str.isEmpty()==false){
+				
 		if(str.length()>0){
 		
 			double ratio = Double.parseDouble(str);
 			
 			String s = "";
 			s += "\n\t{" 
-					+ type
+					+ ptrain_type
 					+ "} Processing " 
-					+ GearsFinderUIExt.kn_permutations(GearsFinderUIExt.given_gear_sets[set].length,type) 
+					+ GearsFinderUIExt.kn_permutations(GearsFinderUIExt.given_gear_sets[set].length,ptrain_type) 
 					+ " cases on "
 					+ n_cores
 					+ " core(s)...\t"
@@ -77,41 +69,17 @@ public class MainActivity extends Activity {
 			new WorkingThread().execute(Integer.toString(set),
 									Double.toString(ratio),
 									Integer.toString(n_max),
-									Integer.toString(type)
+									Integer.toString(ptrain_type)
 									);			
 		}		
 	}
-
-	public void start_work_4(View view){
-		
-		int set = 2;		
-		int n_max = 20;
-		int type = 4;		
-		String str = tratio.getText().toString();		
 	
-		//if(str.isEmpty()==false){
-		if(str.length()>0){
-		
-			double ratio = Double.parseDouble(str);
-			
-			String s = "";
-			s += "\n\t{" 
-					+ type
-					+ "} Processing " 
-					+ GearsFinderUIExt.kn_permutations(GearsFinderUIExt.given_gear_sets[set].length,type) 
-					+ " cases on "
-					+ n_cores
-					+ " core(s)...\t"
-					;
-			output.setText(s);
+	public void search_ptrain_type_2(View view){
+		start_searching(2);
+	}
 
-			//run separate working thread
-			new WorkingThread().execute(Integer.toString(set),
-									Double.toString(ratio),
-									Integer.toString(n_max),
-									Integer.toString(type)
-									);			
-		}		
+	public void search_ptrain_type_4(View view){
+		start_searching(4);
 	}
 
 	public interface IFCallback{
@@ -155,8 +123,6 @@ public class MainActivity extends Activity {
 				s += "done in: " + (long)(duration/1000000.0) + " ms\n\n";
 				
 				for(int j = 0; j < n_actual; j++){					
-					//s += (j+1) + "\t" + selected[j].toString() + "\n";
-					//s += String.format("%d\t", j+1);
 					s += selected[j].toString() + "\n";
 				}
 				
@@ -169,9 +135,7 @@ public class MainActivity extends Activity {
 		public void callback(Integer value){
 			publishProgress(value);
 		}
-
-		//protected boolean is_on = false; 
-		
+	
 		protected void onProgressUpdate(Integer...progress){
 			progressbar.setProgress(progress[0]);			
 		}
