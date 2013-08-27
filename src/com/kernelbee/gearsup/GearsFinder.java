@@ -139,6 +139,12 @@ public class GearsFinder {
 		return n_found;
 	}
 	
+	static volatile boolean stopit = false;
+	
+	public static void cancelSearching(boolean cancel){
+		stopit = cancel;
+	}
+	
 	public static int arrange_gears(int start, int finish, int type, int[] set, GearTrain[] selected, double ratio){
 		
 		int n_found = 0;
@@ -153,7 +159,7 @@ public class GearsFinder {
 			
 			GearTrainGenerator gtg = new GearTrainGenerator(type,start,finish,set);
 			
-			while( (curr_gears = gtg.generateNext()) != null ) {
+			while( (curr_gears = gtg.generateNext()) != null && stopit==false) {
 				
 				boolean update_worst = false;
 				double curr_error = Math.abs(gtg.getCurrRatio() - ratio);
@@ -184,6 +190,10 @@ public class GearsFinder {
 				}
 				
 			}//while loop
+			
+			if(stopit){
+				n_found = 0;
+			}
 			
 			//pack results into output buffer
 			for(int i = 0; i < n_found; i++){

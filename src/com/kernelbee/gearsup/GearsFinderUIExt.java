@@ -6,7 +6,7 @@ public class GearsFinderUIExt extends GearsFinder{
 	
 	private static int progress_prev = -1;
 	static public IFCallback ifcallback;
-
+	
 	public static int arrange_gears(int start, int finish, int type, int[] set, GearTrain[] selected, double ratio){
 		
 		int n_found = 0;
@@ -21,7 +21,7 @@ public class GearsFinderUIExt extends GearsFinder{
 			
 			GearTrainGenerator gtg = new GearTrainGenerator(type,start,finish,set);
 			
-			while( (curr_gears = gtg.generateNext()) != null ) {
+			while( (curr_gears = gtg.generateNext()) != null && stopit==false) {
 				
 				boolean update_worst = false;
 				double curr_error = Math.abs(gtg.getCurrRatio() - ratio);
@@ -56,11 +56,23 @@ public class GearsFinderUIExt extends GearsFinder{
                         int sa = gtg.getProgress();
                         if (progress_prev != sa) {
                                 progress_prev = sa;
-                                ifcallback.callback((int) (((double) (sa-start) / (double) (finish-start)) * 100));
+                                ifcallback.updateProgress((int) (((double) (sa-start) / (double) (finish-start)) * 100));
                         }
-                }			
-				
+                }
+                
+                /*
+                //too slow!                
+                if(ifcallback.isTimeToCancel()){
+                	n_found = 0;
+                	break;
+                }
+                */
+                				
 			}//while loop
+			
+			if(stopit){
+				n_found = 0;
+			}
 			
 			//pack results into output buffer
 			for(int i = 0; i < n_found; i++){

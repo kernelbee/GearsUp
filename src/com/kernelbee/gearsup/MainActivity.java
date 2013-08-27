@@ -1,15 +1,16 @@
 package com.kernelbee.gearsup;
 
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
 	int n_cores;
 	
@@ -18,10 +19,15 @@ public class MainActivity extends Activity {
 	ProgressBar progressbar;
 	Button button2;
 	Button button4;
-		
+	
+	AsyncTask<String, Integer, String> worker;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		System.out.print("GearsUp: [onCreate]!\n");
+		
 		setContentView(R.layout.activity_main);
 		
 		n_cores = Runtime.getRuntime().availableProcessors();		
@@ -35,14 +41,54 @@ public class MainActivity extends Activity {
 		//adjust text size:
 		//output.setTextSize();		
 	}
+	
+	@Override
+	protected void onPause(){
+		super.onPause();		
+		System.out.print("GearsUp: [onPause]!\n");
+	}
+	
+	@Override
+	protected void onStop(){
+		super.onStop();
+		System.out.print("GearsUp: [onStop]!\n");
+	}
+	
+	@Override	
+	protected void onDestroy(){
+		super.onDestroy();
+		
+		System.out.print("GearsUp: [onDestroy]!\n");
+		
+		if(worker != null) {
+			
+			GearsFinderUIExt.cancelSearching(true);			
+			worker.cancel(true);
+			
+			System.out.print("GearsUp: [onDestroy: cancel WORKER]!\n");
+		}		
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		getMenuInflater().inflate(R.menu.main, menu);		
+		return super.onCreateOptionsMenu(menu);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+	        case R.id.action_gears_set:
+	            //openSetOfGears();
+				System.out.print("Clicked Action: [SET OF GEARS]\n");
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
 	public void start_searching(int ptrain_type){
 		
 		int set = 2;
@@ -66,11 +112,12 @@ public class MainActivity extends Activity {
 			output.setText(s);
 			
 			//run separate working thread
-			new WorkingThread().execute(Integer.toString(set),
-									Double.toString(ratio),
-									Integer.toString(n_max),
-									Integer.toString(ptrain_type)
-									);			
+			worker = new WorkingThread();
+			
+			worker.execute(	Integer.toString(set),
+							Double.toString(ratio),
+							Integer.toString(n_max),
+							Integer.toString(ptrain_type));			
 		}		
 	}
 	
@@ -83,11 +130,12 @@ public class MainActivity extends Activity {
 	}
 
 	public interface IFCallback{
-		public void callback(Integer value); 
+		public void updateProgress(Integer value);
+		//public boolean isTimeToCancel();
 	}
 	
 	class WorkingThread extends AsyncTask<String, Integer, String> 
-											implements IFCallback {		
+											implements IFCallback {
 		@Override
 		protected String doInBackground(String... params) {
 			
@@ -109,6 +157,8 @@ public class MainActivity extends Activity {
 				
 				GearTrain[] selected = new GearTrain[n_max];									
 
+				GearsFinderUIExt.cancelSearching(false);
+				
 				long time = System.nanoTime();
 				int n_actual = GearsFinderUIExt.prepare_geartrain_setups
 								(	GearsFinderUIExt.class.getName(),
@@ -132,10 +182,15 @@ public class MainActivity extends Activity {
 			return null;
 		}
 		
-		public void callback(Integer value){
+		public void updateProgress(Integer value){
 			publishProgress(value);
 		}
-	
+		
+		/*
+		public boolean isTimeToCancel() {
+			return isCancelled();
+		}*/
+						
 		protected void onProgressUpdate(Integer...progress){
 			progressbar.setProgress(progress[0]);			
 		}
@@ -157,6 +212,12 @@ public class MainActivity extends Activity {
 			button4.setEnabled(true);
 			output.append(result);
 			publishProgress(0);//job is done!
+		}
+		
+		@Override
+		protected void onCancelled() {
+			System.out.print("GearsUp: Worker [CANCELLED]!\n");
+			super.onCancelled();			
 		}
 	}
 }

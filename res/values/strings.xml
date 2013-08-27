@@ -10,5 +10,6 @@
     <string name="hint_ratio">1.23456789</string>
     <string name="tratio">Trans. Ratio:</string>
     <string name="hint_output">Results: {gears}, actual tr.ratio, error</string>
+    <string name="text_set_of_gears">Set of gears</string>
 
 </resources>
