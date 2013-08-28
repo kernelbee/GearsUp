@@ -69,7 +69,7 @@
             android1:layout_gravity="bottom|left"
             android1:layout_weight="1"
             android1:gravity="center_vertical|center_horizontal|left"
-            android1:onClick="search_ptrain_type_2"
+            android1:onClick="searchPtrainType2"
             android1:text="@string/text_button0" />
 
         <Button
@@ -79,7 +79,7 @@
             android1:layout_gravity="bottom|right"
             android1:layout_weight="1"
             android1:gravity="center_vertical|center_horizontal|right"
-            android1:onClick="search_ptrain_type_4"
+            android1:onClick="searchPtrainType4"
             android1:text="@string/text_button1" />
 
     </LinearLayout>

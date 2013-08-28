@@ -2,6 +2,8 @@ package com.kernelbee.gearsup;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import com.kernelbee.gearsup.MainActivity.IFCallback;
+
 public class GearsFinder {
 	
 	public static int given_gear_sets[][] = {
@@ -22,7 +24,7 @@ public class GearsFinder {
 	{}
 	};		
 		
-	public static long kn_permutations(int n, int k)
+	public static long knPermutations(int n, int k)
 	{
 		long t;
 		int x;
@@ -57,7 +59,7 @@ public class GearsFinder {
 		};
 	}
 
-	protected static int worst_geartrain(double[] errors,int n_actually){
+	protected static int worstGeartrain(double[] errors,int n_actually){
 		int worst = 0;
 				
 		for(int i = 1; i < n_actually; i++)
@@ -67,9 +69,8 @@ public class GearsFinder {
 		return worst;
 	}	
 	
-	public static int prepare_geartrain_setups
-		(String class_name,String static_method_name,
-		int cores,int type, int[] set,GearTrain[] selected, double ratio, boolean sort) {		
+	public static int prepareGeartrainSetups
+		(int cores,int type, int[] set,GearTrain[] selected, double ratio, boolean sort) {		
 				
 		if(cores < 1)//Brother, no CPU - no work! #:0)
 			return 0;
@@ -78,11 +79,6 @@ public class GearsFinder {
 		
 		int start = 0,finish = 0;
 		int step = set.length / cores;
-
-		if(class_name == null)
-			class_name = GearsFinder.class.getName();
-		if(static_method_name == null)
-			static_method_name = "arrange_gears";
 		
 		//prepare and run threads (one per core)
 		
@@ -94,9 +90,7 @@ public class GearsFinder {
 			
 			finish = ( (finish + step) < set.length ) ? (finish + step): (set.length-1);				
 			
-			runners[i] = new GearsFinderThread(	class_name,
-												static_method_name,
-												start, finish, type, set, found[i], ratio);
+			runners[i] = new GearsFinderThread(start, finish, type, set, found[i], ratio);
 			threads[i] = new Thread(runners[i]);			
 			threads[i].start();
 			
@@ -145,7 +139,10 @@ public class GearsFinder {
 		stopit = cancel;
 	}
 	
-	public static int arrange_gears(int start, int finish, int type, int[] set, GearTrain[] selected, double ratio){
+	private static int progress_prev = -1;
+	public static volatile IFCallback ifcallback;
+	
+	public static int arrangeGears(int start, int finish, int type, int[] set, GearTrain[] selected, double ratio){
 		
 		int n_found = 0;
 						
@@ -159,7 +156,7 @@ public class GearsFinder {
 			
 			GearTrainGenerator gtg = new GearTrainGenerator(type,start,finish,set);
 			
-			while( (curr_gears = gtg.generateNext()) != null && stopit==false) {
+			while( stopit==false && (curr_gears = gtg.generateNext()) != null) {
 				
 				boolean update_worst = false;
 				double curr_error = Math.abs(gtg.getCurrRatio() - ratio);
@@ -186,9 +183,20 @@ public class GearsFinder {
 				}
 				
 				if(update_worst){
-					worst = worst_geartrain(found_errors,n_found);					
+					worst = worstGeartrain(found_errors,n_found);					
 				}
 				
+                // set progress by last thread progress
+                if(finish == set.length-1){
+                        int sa = gtg.getProgress();
+                        if (progress_prev != sa) {
+                                progress_prev = sa;
+                                //if(ifcallback != null){
+                                	ifcallback.updateProgress((int) (((double) (sa-start) / (double) (finish-start)) * 100));	
+                                //}                                
+                        }
+                }                
+                				
 			}//while loop
 			
 			if(stopit){

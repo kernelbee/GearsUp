@@ -20,7 +20,7 @@ public class MainActivity extends ActionBarActivity {
 	Button button2;
 	Button button4;
 	
-	AsyncTask<String, Integer, String> worker;
+	static private WorkingThread worker;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,17 @@ public class MainActivity extends ActionBarActivity {
 		button4 = (Button)findViewById(R.id.Button1);		
 						
 		//adjust text size:
-		//output.setTextSize();		
+		//output.setTextSize();
+		
+		if(worker != null){
+			if(worker.getStatus().equals(AsyncTask.Status.RUNNING)){
+				//connect activity with still active back ground thread
+				worker.activity = this;				
+			}else{
+				//thread is finished or pending, so clean it up: allow GC to do it's job
+				worker = null;
+			}
+		}		
 	}
 	
 	@Override
@@ -59,14 +69,19 @@ public class MainActivity extends ActionBarActivity {
 		super.onDestroy();
 		
 		System.out.print("GearsUp: [onDestroy]!\n");
-		
+						
 		if(worker != null) {
 			
-			GearsFinderUIExt.cancelSearching(true);			
-			worker.cancel(true);
+			worker.activity = null;
 			
-			System.out.print("GearsUp: [onDestroy: cancel WORKER]!\n");
-		}		
+			if(isFinishing()){
+				
+				GearsFinder.cancelSearching(true);			
+				worker.cancel(true);
+				
+				System.out.print("GearsUp: [onDestroy: cancel WORKER]!\n");				
+			}			
+		}
 	}
 
 	@Override
@@ -87,9 +102,17 @@ public class MainActivity extends ActionBarActivity {
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
-	}
+	}	
 	
-	public void start_searching(int ptrain_type){
+	public void searchPtrainType2(View view){
+		startSearching(2);
+	}
+
+	public void searchPtrainType4(View view){
+		startSearching(4);
+	}
+
+	public void startSearching(int ptrain_type){
 		
 		int set = 2;
 		int n_max = 20;
@@ -104,7 +127,7 @@ public class MainActivity extends ActionBarActivity {
 			s += "\n\t{" 
 					+ ptrain_type
 					+ "} Processing " 
-					+ GearsFinderUIExt.kn_permutations(GearsFinderUIExt.given_gear_sets[set].length,ptrain_type) 
+					+ GearsFinder.knPermutations(GearsFinder.given_gear_sets[set].length,ptrain_type) 
 					+ " cases on "
 					+ n_cores
 					+ " core(s)...\t"
@@ -113,29 +136,25 @@ public class MainActivity extends ActionBarActivity {
 			
 			//run separate working thread
 			worker = new WorkingThread();
-			
+			worker.activity = this;
 			worker.execute(	Integer.toString(set),
 							Double.toString(ratio),
 							Integer.toString(n_max),
-							Integer.toString(ptrain_type));			
+							Integer.toString(ptrain_type),
+							Integer.toString(n_cores)
+							);			
 		}		
 	}
 	
-	public void search_ptrain_type_2(View view){
-		start_searching(2);
-	}
-
-	public void search_ptrain_type_4(View view){
-		start_searching(4);
-	}
-
 	public interface IFCallback{
 		public void updateProgress(Integer value);
-		//public boolean isTimeToCancel();
 	}
 	
-	class WorkingThread extends AsyncTask<String, Integer, String> 
+	static class WorkingThread extends AsyncTask<String, Integer, String> 
 											implements IFCallback {
+		
+		volatile MainActivity activity = null;
+		
 		@Override
 		protected String doInBackground(String... params) {
 			
@@ -143,29 +162,24 @@ public class MainActivity extends ActionBarActivity {
 			double ratio = Double.parseDouble(params[1]);
 			int n_max = Integer.parseInt(params[2]);
 			int type = Integer.parseInt(params[3]);
+			int n_cores = Integer.parseInt(params[4]);
 			
-			if(GearsFinderUIExt.given_gear_sets[set].length > 0){
-				
-				GearsFinderUIExt.ifcallback = this;
+			if(GearsFinder.given_gear_sets[set].length > 0){				
 				
 				System.out.format(
 						"input: set{=%d, %d gears}, ratio{%.16f}\n",
-						set,GearsFinderUIExt.given_gear_sets[set].length,ratio
+						set,GearsFinder.given_gear_sets[set].length,ratio
 						);
 
 				String s = "";
 				
-				GearTrain[] selected = new GearTrain[n_max];									
-
-				GearsFinderUIExt.cancelSearching(false);
+				GearTrain[] selected = new GearTrain[n_max];		
 				
 				long time = System.nanoTime();
-				int n_actual = GearsFinderUIExt.prepare_geartrain_setups
-								(	GearsFinderUIExt.class.getName(),
-									null,
-									n_cores,
+				int n_actual = GearsFinder.prepareGeartrainSetups
+								(	n_cores,
 									type,
-									GearsFinderUIExt.given_gear_sets[set],
+									GearsFinder.given_gear_sets[set],
 									selected,ratio,true
 								);
 				long duration = System.nanoTime() - time;
@@ -183,41 +197,55 @@ public class MainActivity extends ActionBarActivity {
 		}
 		
 		public void updateProgress(Integer value){
-			publishProgress(value);
+			if(activity != null){
+				publishProgress(value);
+			}
 		}
-		
-		/*
-		public boolean isTimeToCancel() {
-			return isCancelled();
-		}*/
 						
 		protected void onProgressUpdate(Integer...progress){
-			progressbar.setProgress(progress[0]);			
+			if(activity != null){
+				activity.progressbar.setProgress(progress[0]);
+			}			
 		}
 		
 		@Override
 		protected void onPreExecute(){
 			super.onPreExecute();
-			tratio.setEnabled(false);
-			button2.setEnabled(false);
-			button4.setEnabled(false);			
-			publishProgress(0);//reset
+			
+			if(activity != null){
+				activity.tratio.setEnabled(false);
+				activity.button2.setEnabled(false);
+				activity.button4.setEnabled(false);			
+				publishProgress(0);//reset				
+			}
+			
+			//setup finder properly
+			GearsFinder.ifcallback = this;
+			GearsFinder.cancelSearching(false);
 		}
 		
 		@Override
 		protected void onPostExecute(String result){
 			super.onPostExecute(result);
-			tratio.setEnabled(true);
-			button2.setEnabled(true);
-			button4.setEnabled(true);
-			output.append(result);
-			publishProgress(0);//job is done!
+			
+			GearsFinder.ifcallback = null;
+						
+			if(activity != null){
+				activity.tratio.setEnabled(true);
+				activity.button2.setEnabled(true);
+				activity.button4.setEnabled(true);
+				activity.output.append(result);
+				publishProgress(0);//job is done!				
+			}
 		}
 		
 		@Override
-		protected void onCancelled() {
+		protected void onCancelled() {			
+			super.onCancelled();
+			
+			GearsFinder.ifcallback = null;
+						
 			System.out.print("GearsUp: Worker [CANCELLED]!\n");
-			super.onCancelled();			
 		}
 	}
 }
