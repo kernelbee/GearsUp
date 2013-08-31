@@ -10,7 +10,8 @@ public class Preferences {
 	
 	public static final int PREFS_DEFAULT_TR_TYPE = 2;
 	public static final double PREFS_DEFAULT_TR_RATIO = 1.0;
-	public static final int PREFS_DEFAULT_NSET = 21;
+	public static final int PREFS_DEFAULT_SET = 2;
+	public static final int PREFS_DEFAULT_NSET = GearsFinder.given_gear_sets[PREFS_DEFAULT_SET].length;
 	public static final int PREFS_DEFAULT_NMAX = 20;
 		
 	public int trType;
@@ -49,7 +50,7 @@ public class Preferences {
 			
 			String key = "result#" + i; 
 			
-			switch(obj.trType){
+			switch(obj.trType){			
 			case 2:
 				editor.putInt(key+"[a]",obj.found[i].gears[0]);
 				editor.putInt(key+"[b]",obj.found[i].gears[1]);
@@ -93,7 +94,7 @@ public class Preferences {
 		
 		for(int i = 0 ; i < nSet; i++){
 			String key = "gear#" + i; 
-			obj.gearsSet[i] = settings.getInt(key,i+20);
+			obj.gearsSet[i] = settings.getInt(key,GearsFinder.given_gear_sets[PREFS_DEFAULT_SET][i]);
 		}		
 				
 		int nAct = settings.getInt("nAct",0);

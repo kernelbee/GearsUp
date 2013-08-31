@@ -126,10 +126,8 @@ public class GearsFinder {
 		
 		n_found = (n_found >= selected.length) ? selected.length:n_found;			
 		if(n_found > 0){		
-			Arrays.sort(total, compare_by_error);			
-			for(int i = 0; i < n_found; i++){
-				selected[i] = new GearTrain(total[i]); 
-			}
+			Arrays.sort(total, compare_by_error);
+			System.arraycopy(total, 0, selected, 0, n_found);
 		}
 		
 		return n_found;

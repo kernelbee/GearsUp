@@ -5,11 +5,18 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="text_button"></string>
-    <string name="text_button0">2</string>
-    <string name="text_button1">4</string>
+    <string name="text_button0">Run search</string>
     <string name="hint_ratio">1.23456789</string>
     <string name="tratio">Trans. Ratio:</string>
     <string name="hint_output">Results: {gears}, actual tr.ratio, error</string>
     <string name="text_set_of_gears">Set of gears</string>
+    <string name="text_gttypes_desc">Type of gear train:</string>
+
+    <string-array name="gttypes">
+        <item>2-gears (simple)</item>
+        <item>4-gears (compound)</item>
+    </string-array>
+
+    <string name="title_activity_set_of_gears">Set of gears</string>
 
 </resources>
