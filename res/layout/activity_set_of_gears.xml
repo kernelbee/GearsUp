@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,11 +6,58 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"    
     tools:context=".SetOfGearsActivity" >
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/text_gears_header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="" />
+    
+        <TextView
+	        android:id="@+id/text_gears"
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_gravity="center_vertical|center_horizontal"
+	        android:layout_weight="0.46"
+	        android:ems="10"
+	        android:enabled="true"
+	        android:gravity="center_vertical|center_horizontal"	        
+	        android:scrollbars="vertical"
+	        android:textAlignment="viewStart" />
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/button_minus"                
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="gearMinus"
+                android:text="@string/text_minus" />
+
+            <EditText
+                android:id="@+id/text_tgear"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0.27"
+                android:ems="10"
+                android:gravity="center"
+                android:digits="0123456789"
+                android:inputType="textNoSuggestions|number" >
+
+                <requestFocus />
+            </EditText>
+
+            <Button
+                android:id="@+id/button_plus"                
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="gearPlus"
+                android:text="@string/text_plus" />
+
+        </LinearLayout>
+        
+    </LinearLayout>

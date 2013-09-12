@@ -89,12 +89,20 @@ public class Preferences {
 
 		obj.nMax = settings.getInt("nMax",PREFS_DEFAULT_NMAX);
 		
-		int nSet = settings.getInt("nSet",PREFS_DEFAULT_NSET);
+		int nSet = settings.getInt("nSet",PREFS_DEFAULT_NSET);		
+		//System.out.format("GearsUp: restored prefs: %d gears\n",nSet);
 		obj.gearsSet = new int[nSet];
 		
 		for(int i = 0 ; i < nSet; i++){
-			String key = "gear#" + i; 
-			obj.gearsSet[i] = settings.getInt(key,GearsFinder.given_gear_sets[PREFS_DEFAULT_SET][i]);
+			int defval;
+			String key = "gear#" + i;			
+			
+			if(i + 1 < PREFS_DEFAULT_NSET)
+				defval = GearsFinder.given_gear_sets[PREFS_DEFAULT_SET][i];
+			else
+				defval = 1000;
+			
+			obj.gearsSet[i] = settings.getInt(key,defval);
 		}		
 				
 		int nAct = settings.getInt("nAct",0);

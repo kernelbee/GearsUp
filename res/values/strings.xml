@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="text_button"></string>
     <string name="text_button0">Run search</string>
-    <string name="hint_ratio">1.23456789</string>
+    <string name="hint_ratio">Transmission Ratio</string>
     <string name="tratio">Trans. Ratio:</string>
     <string name="hint_output">Results: {gears}, actual tr.ratio, error</string>
     <string name="text_set_of_gears">Set of gears</string>
@@ -18,5 +18,9 @@
     </string-array>
 
     <string name="title_activity_set_of_gears">Set of gears</string>
+
+    <string name="text_minus">-</string>
+
+    <string name="text_plus">+</string>
 
 </resources>

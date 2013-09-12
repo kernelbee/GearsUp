@@ -12,68 +12,35 @@
     android1:orientation="vertical"
     tools:context=".MainActivity" >
 
-    <LinearLayout
+    <Spinner
+        android1:id="@+id/spinner1"
         android1:layout_width="match_parent"
-        android1:layout_height="wrap_content" >
+        android1:layout_height="wrap_content"
+        android1:contentDescription="@string/text_gttypes_desc"
+        android1:entries="@array/gttypes"
+        android1:focusable="true"
+        android1:focusableInTouchMode="true"
+        android1:gravity="left" />
 
-        <TextView
-            android1:id="@+id/text_spinner1"
-            android1:layout_width="83dp"
-            android1:layout_height="wrap_content"
-            android1:layout_gravity="top"
-            android1:layout_weight="0.15"
-            android1:text="@string/text_gttypes_desc"
-            android1:textAlignment="textStart"
-            android1:textSize="16sp" />
-
-        <Spinner
-            android1:id="@+id/spinner1"
-            android1:layout_width="0dp"
-            android1:layout_height="wrap_content"
-            android1:layout_weight="1"
-            android1:contentDescription="@string/text_gttypes_desc"
-            android1:entries="@array/gttypes"
-            android1:focusable="true"
-            android1:focusableInTouchMode="true"
-            android1:gravity="left" />
-
-    </LinearLayout>
-
-    <LinearLayout
+    <EditText
+        android1:id="@+id/text_tratio"
         android1:layout_width="match_parent"
-        android1:layout_height="wrap_content" >
-
-        <TextView
-            android1:id="@+id/lable_tratio"
-            android1:layout_width="83dp"
-            android1:layout_height="wrap_content"
-            android1:layout_gravity="top"
-            android1:layout_weight="0.15"
-            android1:text="@string/tratio"
-            android1:textAlignment="textStart"
-            android1:textSize="16sp" />
-
-        <EditText
-            android1:id="@+id/text_tratio"
-            android1:layout_width="0dp"
-            android1:layout_height="wrap_content"
-            android1:layout_gravity="top"
-            android1:layout_weight="1"
-            android1:ems="10"
-            android1:gravity="left"
-            android1:hint="@string/hint_ratio"
-            android1:inputType="numberDecimal"
-            android1:textAlignment="textStart" />
-        
-    </LinearLayout>
+        android1:layout_height="wrap_content"
+        android1:ems="10"
+        android1:gravity="left"
+        android1:hint="@string/hint_ratio"
+        android1:inputType="numberDecimal"
+        android1:textAlignment="textStart" />
 
     <EditText
         android1:id="@+id/text_output"
-        android1:layout_width="wrap_content"
+        android1:layout_width="match_parent"
         android1:layout_height="0dp"
-        android1:layout_gravity="top|center_horizontal"
-        android1:layout_weight="0.74"
+        android1:layout_gravity="center_vertical|center_horizontal"
+        android1:layout_weight="0.46"
+        android1:ems="10"
         android1:enabled="true"
+        android1:gravity="center_vertical|center_horizontal"
         android1:hint="@string/hint_output"
         android1:inputType="textMultiLine|textNoSuggestions"
         android1:scrollbars="vertical"
@@ -85,23 +52,14 @@
         style="?android:attr/progressBarStyleHorizontal"
         android1:layout_width="match_parent"
         android1:layout_height="10dp"
-        android1:layout_gravity="center_horizontal|fill_horizontal"
         android1:max="100" />
 
-    <LinearLayout
+    <Button
+        android1:id="@+id/Button0"
         android1:layout_width="match_parent"
-        android1:layout_height="wrap_content" >
-
-        <Button
-            android1:id="@+id/Button0"
-            android1:layout_width="0dp"
-            android1:layout_height="wrap_content"
-            android1:layout_gravity="bottom|center"
-            android1:layout_weight="1"
-            android1:gravity="center_vertical|center_horizontal"
-            android1:onClick="runSearch"
-            android1:text="@string/text_button0" />
-
-    </LinearLayout>
+        android1:layout_height="wrap_content"
+        android1:gravity="center_vertical|center_horizontal"
+        android1:onClick="runSearch"
+        android1:text="@string/text_button0" />
 
 </LinearLayout>

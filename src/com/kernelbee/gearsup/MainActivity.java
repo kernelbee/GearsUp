@@ -190,8 +190,11 @@ public class MainActivity extends ActionBarActivity {
 		buttonRun.setEnabled(enable);
 		gttype.setEnabled(enable);
 		//menu
-		enable_menuItemGears = enable;		
-		invalidateOptionsMenu();//to trigger onPrepareOptionsMenu() later 
+		enable_menuItemGears = enable;
+		
+		//to trigger onPrepareOptionsMenu() later
+		//invalidateOptionsMenu();//API 11+
+		supportInvalidateOptionsMenu();
 	}
 	
 	public void runSearch(View view){
@@ -268,7 +271,7 @@ public class MainActivity extends ActionBarActivity {
 								
 				results_buffer = new GearTrain[n_max];		
 				
-				long time = System.nanoTime();
+				//long time = System.nanoTime();
 				//run searching loop
 				n_found = GearsFinder.prepareGeartrainSetups
 							(	n_cores,
@@ -276,12 +279,12 @@ public class MainActivity extends ActionBarActivity {
 								setOfGears,
 								results_buffer,ratio,true
 							);
-				long duration = System.nanoTime() - time;
+				//long duration = System.nanoTime() - time;
 				
 				//prepare text with results
 				String s = "";
-				s += "Gear train type: " + type + "-gears;\n";
-				s += "done in: " + (long)(duration/1000000.0) + " ms\n\n";				
+				//s += "Gear train type: " + type + "-gears;\n";
+				//s += "done in: " + (long)(duration/1000000.0) + " ms\n\n";				
 				for(int j = 0; j < n_found; j++){					
 					s += results_buffer[j].toString() + "\n";
 				}
